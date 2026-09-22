@@ -83,7 +83,7 @@ class NotificationService {
 
   Future<void> scheduleRollingWindow(
     AppSettings settings, {
-    int days = 14,
+    int days = 3,
   }) async {
     await plugin.cancelAll();
 
