@@ -71,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<int>(
-                  value: settings.reminderIntervalMinutes,
+                  initialValue: settings.reminderIntervalMinutes,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                   ),
