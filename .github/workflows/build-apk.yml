@@ -22,13 +22,13 @@ jobs:
 
       - name: Create Android scaffold
         run: |
-          mkdir -p /tmp/recovery-build
+          rm -rf /tmp/recovery-build
           flutter create \
             --platforms=android \
             --org com.musaaditya \
             --project-name lower_back_recovery \
             /tmp/recovery-build
-          rm -rf /tmp/recovery-build/lib
+          rm -rf /tmp/recovery-build/lib /tmp/recovery-build/test
           cp -R lib /tmp/recovery-build/lib
           cp pubspec.yaml analysis_options.yaml /tmp/recovery-build/
           mkdir -p /tmp/recovery-build/tool
