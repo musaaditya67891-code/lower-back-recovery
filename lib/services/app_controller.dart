@@ -45,8 +45,10 @@ class AppController extends ChangeNotifier {
     initialized = true;
     notifyListeners();
 
-    if (notifications.tappedSession.value != null) {
-      notifications.tappedSession.notifyListeners();
+    final pendingTap = notifications.tappedSession.value;
+    if (pendingTap != null) {
+      notifications.tappedSession.value = null;
+      notifications.tappedSession.value = pendingTap;
     }
   }
 
