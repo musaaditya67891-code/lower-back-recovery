@@ -10,8 +10,8 @@ import 'services/app_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final controller = AppController();
-  await controller.initialize();
   runApp(RecoveryApp(controller: controller));
+  await controller.initialize();
 }
 
 class RecoveryApp extends StatelessWidget {
@@ -86,7 +86,7 @@ class _RecoveryShellState extends State<RecoveryShell> {
 
   void _handleNotificationTap() {
     final type = widget.controller.notifications.tappedSession.value;
-    if (type == null || !mounted) return;
+    if (type == null || !mounted || !widget.controller.initialized) return;
     widget.controller.notifications.tappedSession.value = null;
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -100,6 +100,26 @@ class _RecoveryShellState extends State<RecoveryShell> {
     return AnimatedBuilder(
       animation: widget.controller,
       builder: (context, _) {
+        if (!widget.controller.initialized) {
+          return const Scaffold(
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.all(28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 18),
+                      Text('Menyiapkan recovery tracker...'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
         final pages = [
           HomeScreen(controller: widget.controller),
           HistoryScreen(controller: widget.controller),
