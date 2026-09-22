@@ -24,13 +24,30 @@ class AppController extends ChangeNotifier {
   bool initialized = false;
 
   Future<void> initialize() async {
-    settings = await settingsService.load();
-    await repository.reconcileHistory(settings);
-    await notifications.initialize();
-    await notifications.requestPermissions();
-    await notifications.scheduleRollingWindow(settings);
+    try {
+      settings = await settingsService.load();
+      await repository.reconcileHistory(settings);
+    } catch (e, st) {
+      debugPrint('Core initialization failed: $e\n$st');
+      initialized = true;
+      notifyListeners();
+      return;
+    }
+
+    try {
+      await notifications.initialize();
+      await notifications.requestPermissions();
+      await notifications.scheduleRollingWindow(settings);
+    } catch (e, st) {
+      debugPrint('Notification initialization failed: $e\n$st');
+    }
+
     initialized = true;
     notifyListeners();
+
+    if (notifications.tappedSession.value != null) {
+      notifications.tappedSession.notifyListeners();
+    }
   }
 
   Future<void> requestNotificationPermissions() =>
@@ -40,7 +57,11 @@ class AppController extends ChangeNotifier {
     settings = value;
     await settingsService.save(value);
     await repository.reconcileHistory(value);
-    await notifications.scheduleRollingWindow(value);
+    try {
+      await notifications.scheduleRollingWindow(value);
+    } catch (e) {
+      debugPrint('Reschedule failed: $e');
+    }
     notifyListeners();
   }
 
@@ -66,7 +87,11 @@ class AppController extends ChangeNotifier {
       leftReps: leftReps,
       rightReps: rightReps,
     );
-    await notifications.cancelForDate(DateTime.now(), type);
+    try {
+      await notifications.cancelForDate(DateTime.now(), type);
+    } catch (e) {
+      debugPrint('Cancel reminder failed: $e');
+    }
     notifyListeners();
   }
 }
